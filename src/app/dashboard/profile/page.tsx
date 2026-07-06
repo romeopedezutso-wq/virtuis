@@ -36,7 +36,10 @@ export default function ProfilePage() {
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!profile) return;
+    if (!profile) {
+      toast.error('Profil non trouvé');
+      return;
+    }
 
     setLoading(true);
     try {
@@ -46,15 +49,19 @@ export default function ProfilePage() {
         updatedAt: new Date(),
       });
 
-      setProfile({
+      // Créer un nouvel objet avec les propriétés correctes
+      const updatedProfile = {
         ...profile,
         fullName: formData.fullName,
         phone: formData.phone,
-      });
+      };
+      
+      setProfile(updatedProfile);
 
       toast.success('Profil mis à jour avec succès!');
       setEditMode(false);
     } catch (error) {
+      console.error('Erreur mise à jour profil:', error);
       toast.error('Erreur lors de la mise à jour');
     } finally {
       setLoading(false);
@@ -63,17 +70,30 @@ export default function ProfilePage() {
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
+    if (!user) {
+      toast.error('Utilisateur non authentifié');
+      return;
+    }
+
+    if (!user.email) {
+      toast.error('Email non trouvé');
+      return;
+    }
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       toast.error('Les mots de passe ne correspondent pas');
       return;
     }
 
+    if (passwordData.newPassword.length < 6) {
+      toast.error('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+
     setLoading(true);
     try {
       const credential = EmailAuthProvider.credential(
-        user.email!,
+        user.email,
         passwordData.currentPassword
       );
       await reauthenticateWithCredential(user, credential);
@@ -82,8 +102,15 @@ export default function ProfilePage() {
       toast.success('Mot de passe changé avec succès!');
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
       setShowPasswordForm(false);
-    } catch (error) {
-      toast.error('Erreur: Mot de passe actuel incorrect');
+    } catch (error: any) {
+      console.error('Erreur changement mot de passe:', error);
+      if (error.code === 'auth/wrong-password') {
+        toast.error('Mot de passe actuel incorrect');
+      } else if (error.code === 'auth/weak-password') {
+        toast.error('Le mot de passe est trop faible');
+      } else {
+        toast.error('Erreur: ' + (error.message || 'Impossible de changer le mot de passe'));
+      }
     } finally {
       setLoading(false);
     }
@@ -143,10 +170,10 @@ export default function ProfilePage() {
           </form>
         ) : (
           <div className="space-y-4 text-gray-600">
-            <p><span className="font-bold">Nom:</span> {profile?.fullName}</p>
-            <p><span className="font-bold">Email:</span> {profile?.email}</p>
-            <p><span className="font-bold">Téléphone:</span> {profile?.phone}</p>
-            <p><span className="font-bold">Code de parrainage:</span> {profile?.referralCode}</p>
+            <p><span className="font-bold">Nom:</span> {profile?.fullName || 'Non défini'}</p>
+            <p><span className="font-bold">Email:</span> {profile?.email || 'Non défini'}</p>
+            <p><span className="font-bold">Téléphone:</span> {profile?.phone || 'Non défini'}</p>
+            <p><span className="font-bold">Code de parrainage:</span> {profile?.referralCode || 'Non défini'}</p>
           </div>
         )}
       </div>
