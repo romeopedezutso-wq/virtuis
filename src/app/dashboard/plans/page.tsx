@@ -12,7 +12,7 @@ import { formatCurrency } from '@/utils/helpers';
 export default function PlansPage() {
   const { profile, updateBalance } = useUserStore();
   const [loading, setLoading] = useState(false);
-  const [, setSelectedPlan] = useState(null);
+  const [, setSelectedPlan] = useState<string | null>(null);
 
   const handleInvest = async (planId: string) => {
     if (!profile) return;
