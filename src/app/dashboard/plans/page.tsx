@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { doc, updateDoc, collection, addDoc } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { formatCurrency } from '@/utils/helpers';
-
+´
 export default function PlansPage() {
   const { profile, updateBalance } = useUserStore();
   const [loading, setLoading] = useState(false);
