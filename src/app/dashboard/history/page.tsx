@@ -22,7 +22,7 @@ export default function HistoryPage() {
         const q = query(collection(db, 'transactions'), ...constraints);
         const snapshot = await getDocs(q);
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setTransactions(data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+       setTransactions(data.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
       } catch (error) {
         console.error('Error fetching transactions:', error);
       } finally {
