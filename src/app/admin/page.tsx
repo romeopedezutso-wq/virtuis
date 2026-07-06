@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { formatCurrency, formatDate } from '@/utils/helpers';
 import { FiUsers, FiDollarSign, FiTrendingUp, FiAlertCircle } from 'react-icons/fi';
